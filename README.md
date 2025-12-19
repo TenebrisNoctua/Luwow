@@ -65,6 +65,14 @@ is executed. The remainder are expected to be supporting scripts using require.
 ./lcompile script.luau test.pkg
 ```
 
+You can also use the "--c" option to supply a configuration JSON file instead of supplying the paths through the command line.
+
+```bash
+./lcompile --c path/to/config.json test.pkg
+```
+
+"projectconfig.json" in the repository should be a good example for the JSON file.
+
 ### lrun - Script Executor
 
 Execute Luau scripts from the command line:
