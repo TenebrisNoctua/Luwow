@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(Luwow VERSION 0.1.0 LANGUAGES CXX)
+project(Luwow VERSION 0.2.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -62,7 +62,9 @@ target_link_libraries(Luwow.Gui PRIVATE
 #target_link_libraries(Luwow.Gui.dll PRIVATE Luwow.Engine)
 
 target_link_libraries(Luwow.Engine PUBLIC
-    Luau.VM Luau.Common
+    Luau.VM
+    Luau.Common
+    nlohmann_json::nlohmann_json
 )
 
 target_link_libraries(Luwow.LRun PRIVATE
@@ -105,6 +107,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/extern/luau)
 
 # Add Google's CPPDAP
 add_subdirectory(${CMAKE_SOURCE_DIR}/extern/cppdap)
+
+# Add nlohmann's json
+add_subdirectory(${CMAKE_SOURCE_DIR}/extern/json)
 
 # Set up paths for sssooonnnggg/luau-debugger dependencies
 # Luau path

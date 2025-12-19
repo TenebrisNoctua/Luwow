@@ -1,6 +1,7 @@
 #include "Package.h"
 #include <fstream>
 #include <iostream>
+#include <cstdint>
 
 namespace Luwow::Engine {
 
@@ -14,8 +15,10 @@ void Package::addFile(const std::string& filePath, const std::string& content) {
 }
 
 int Package::indexOfFile(const std::string& filePath) {
+    if (!(filePath.find(".luau") != std::string::npos)) return -1;
+    
     for (int i = 0; i < fileNames.size(); i++) {
-        if (fileNames[i] == filePath) {
+        if (fileNames[i] == filePath || (fileNames[i].find(filePath) != std::string::npos)) {
             return i;
         }
     }

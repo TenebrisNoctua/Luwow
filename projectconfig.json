@@ -1,0 +1,8 @@
+{
+    "name": "ProjectTitle",
+    "tree": {
+        "main": "scripts/main.luau",
+        "simplelibrary": "scripts/simplelibrary.luau",
+        "guitest": "scripts/guitest.luau"
+    }
+}

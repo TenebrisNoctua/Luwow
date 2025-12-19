@@ -7,3 +7,6 @@
 [submodule "extern/cppdap"]
 	path = extern/cppdap
 	url = https://github.com/google/cppdap
+[submodule "extern/json"]
+	path = extern/json
+	url = https://github.com/nlohmann/json

@@ -57,5 +57,7 @@ int executeScript(const std::string& scriptPath) {
     engine.initialize();
     engine.run();
 
+    std::cout << "Luau Runner - Execution Ended" << std::endl;
+
     return 0;
 }
