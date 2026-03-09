@@ -2,6 +2,10 @@
 
 #include "IGuiModule.h"
 #include <GLFW/glfw3.h>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <chrono>
 
 namespace Luwow::Luvk {
     class Window : public IWindow {
@@ -17,7 +21,12 @@ namespace Luwow::Luvk {
 
             // GLFW Window Object
             GLFWwindow *window;
+
+            std::thread eventThread;
+            std::atomic<bool> eventThreadRunning{false};
+            std::atomic<bool> requestedVisible{false};
+            std::mutex startStopMutex;
     };
 
     void getWindowTable(lua_State* L, Window* window);
-}
+} // namespace Luwow::Luvk

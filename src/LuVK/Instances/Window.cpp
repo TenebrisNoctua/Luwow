@@ -1,8 +1,13 @@
 #include "Window.h"
-#include <iostream>
-#include <string>
 #include "lua.h"
 #include "lualib.h"
+
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <chrono>
+#include <iostream>
+#include <string>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -17,15 +22,56 @@ namespace Luwow::Luvk {
     }
 
     Window::~Window() {
-        glfwDestroyWindow(window);
+        toggleVisibility(false);
+
+        std::lock_guard<std::mutex> lock(startStopMutex);
+        if (window) {
+            glfwDestroyWindow(window);
+            window = nullptr;
+        }
         glfwTerminate();
     }
 
     void Window::toggleVisibility(bool enabled) {
-        if (enabled == true) {
-            // Make window visible
+        std::lock_guard<std::mutex> lock(startStopMutex);
+
+        if (enabled) {
+            if (requestedVisible.load()) return;
+            requestedVisible.store(true);
+
+            glfwShowWindow(window);
+
+            if (eventThreadRunning.load()) return;
+
+            eventThreadRunning.store(true);
+            eventThread = std::thread([this]() {
+                // This thread must NOT make the context current if main thread owns it.
+                while (eventThreadRunning.load()) {
+                    if (!window) break;
+                    glfwPollEvents();
+
+                    // Check for close request from the user
+                    if (glfwWindowShouldClose(window)) {
+                        requestedVisible.store(false);
+                        eventThreadRunning.store(false);
+                        break;
+                    }
+
+                    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                }
+            });
         } else {
-            // Make window invisible
+            if (!requestedVisible.load()) return;
+            requestedVisible.store(false);
+
+            // Hide the window on main thread
+            glfwHideWindow(window);
+
+            // Stop the event thread
+            if (!eventThreadRunning.load()) return;
+            
+            eventThreadRunning.store(false);
+            if (eventThread.joinable()) eventThread.join();
         }
     }
 
@@ -60,4 +106,4 @@ namespace Luwow::Luvk {
         lua_setfield(L, -2, "toggleVisibility");
         lua_setreadonly(L, -1, 1);
     }
-} // namespace Luvk
+} // namespace Luwow::Luvk
