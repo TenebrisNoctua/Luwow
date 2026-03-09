@@ -7,3 +7,6 @@
 [submodule "extern/cppdap"]
 	path = extern/cppdap
 	url = https://github.com/google/cppdap
+[submodule "extern/glfw"]
+	path = extern/glfw
+	url = https://github.com/glfw/glfw
