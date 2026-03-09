@@ -10,7 +10,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib_archive)
 
+# Find Vulkan
+find_package(Vulkan REQUIRED)
+
 # Add targets for this project's modules
+add_library(Luwow.LuVK STATIC)
 add_library(Luwow.Engine STATIC)
 add_executable(Luwow.LCompile)
 add_executable(Luwow.LRun)
@@ -31,6 +35,8 @@ target_include_directories(Luwow.Engine PRIVATE
 target_include_directories(Luwow.LRun PRIVATE
     ${CMAKE_SOURCE_DIR}/src/LRun
     ${CMAKE_SOURCE_DIR}/src/Engine
+    ${CMAKE_SOURCE_DIR}/src/LuVK
+    ${CMAKE_SOURCE_DIR}/libs/glfw/include
 )
 
 target_include_directories(Luwow.LCompile
@@ -41,7 +47,16 @@ target_include_directories(Luwow.LCompile
 target_include_directories(Luwow.LDebug PRIVATE
     ${CMAKE_SOURCE_DIR}/src/LDebug
     ${CMAKE_SOURCE_DIR}/src/Engine
+    ${CMAKE_SOURCE_DIR}/src/LuVK
 )
+
+target_include_directories(Luwow.LuVK PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/LuVK
+    ${CMAKE_SOURCE_DIR}/src/Engine
+    ${CMAKE_SOURCE_DIR}/libs/glfw/include
+)
+
+# Set up target link dependencies
 
 target_link_libraries(Luwow.Engine PUBLIC
     Luau.VM Luau.Common
@@ -49,6 +64,9 @@ target_link_libraries(Luwow.Engine PUBLIC
 
 target_link_libraries(Luwow.LRun PRIVATE
     Luwow.Engine
+    Luwow.LuVK
+    glfw
+    Vulkan::Vulkan
 )
 
 target_link_libraries(Luwow.LCompile PRIVATE
@@ -60,11 +78,18 @@ target_link_libraries(Luwow.LCompile PRIVATE
 )
 
 target_link_libraries(Luwow.LDebug PRIVATE
+    Vulkan::Vulkan
     Luwow.Engine
+    Luwow.LuVK
     Luau.Ast
     Luau.Compiler
     Luau.VM
     Luau.Common
+    glfw
+)
+
+target_link_libraries(Luwow.LuVK PRIVATE
+    Luwow.Engine
 )
 
 # Set up target properties
@@ -84,6 +109,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/extern/luau)
 
 # Add Google's CPPDAP
 add_subdirectory(${CMAKE_SOURCE_DIR}/extern/cppdap)
+
+# Add GLFW
+add_subdirectory(${CMAKE_SOURCE_DIR}/extern/glfw)
 
 # Set up paths for sssooonnnggg/luau-debugger dependencies
 # Luau path
