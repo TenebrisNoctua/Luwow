@@ -3,6 +3,7 @@
 #include <filesystem>
 #include "luacode.h"
 #include "Engine.h"
+#include "GuiModule.h"
 
 using Engine = Luwow::Engine::Engine;
 using Package = Luwow::Engine::Package;
@@ -34,6 +35,9 @@ int main(int argc, char* argv[]) {
     }
 
     // Put your own binary modules here and DLLs here
+
+    // Register the GUI module
+    Engine::registerInternalModule(std::make_shared<Luwow::Luvk::GuiModule>());
 
     Engine engine((Package()), std::filesystem::path(argv[1]));
     engine.setCompilerCallback(compilerCallback);
