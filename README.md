@@ -42,10 +42,21 @@ git submodules update --init --recursive
 
 ### 2. Build the Project
 
+If using NMake:
+
 ```bash
 mkdir build
 cd build
 cmake ..
+cmake --build . --config Release
+```
+
+If using MinGW:
+
+```bash
+mkdir build
+cd build
+cmake .. -G "MinGW Makefiles"
 cmake --build . --config Release
 ```
 
