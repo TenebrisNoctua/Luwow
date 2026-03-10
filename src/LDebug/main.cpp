@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
     // Put your own binary modules here and DLLs here
 
     // Register the GUI module
-    Engine::registerInternalModule(std::make_shared<Luwow::Luvk::GuiModule>());
+    Engine::registerInternalModule(std::make_shared<Luwow::LuVK::GuiModule>());
 
     Engine engine((Package()), std::filesystem::path(argv[1]));
     engine.setCompilerCallback(compilerCallback);

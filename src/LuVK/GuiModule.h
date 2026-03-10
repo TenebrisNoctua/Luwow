@@ -3,7 +3,7 @@
 #include "IGuiModule.h"
 #include "Engine.h"
 
-namespace Luwow::Luvk {
+namespace Luwow::LuVK {
     using Engine = Luwow::Engine::Engine;
 
     class GuiModule : public IGuiModule {

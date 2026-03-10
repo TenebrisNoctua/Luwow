@@ -3,7 +3,7 @@
 #include "ILuauModule.h"
 #include "Descriptors.h"
 
-namespace Luwow::Luvk {
+namespace Luwow::LuVK {
     class IWindow {
         public:
             virtual ~IWindow() = default;

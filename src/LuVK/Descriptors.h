@@ -11,7 +11,7 @@ typedef struct vector2 {
     float y;
 } vector2;
 
-namespace Luwow::Luvk {
+namespace Luwow::LuVK {
     struct WindowDescriptor {
         string Title = "";
         vector2 Size;

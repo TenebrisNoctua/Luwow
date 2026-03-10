@@ -7,7 +7,7 @@
 #include <mutex>
 #include <chrono>
 
-namespace Luwow::Luvk {
+namespace Luwow::LuVK {
     class Window : public IWindow {
         public:
             Window(const WindowDescriptor& descriptor);
@@ -29,4 +29,4 @@ namespace Luwow::Luvk {
     };
 
     void getWindowTable(lua_State* L, Window* window);
-} // namespace Luwow::Luvk
+} // namespace Luwow::LuVK

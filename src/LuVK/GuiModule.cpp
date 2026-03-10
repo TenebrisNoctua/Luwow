@@ -1,6 +1,6 @@
 #include "GuiModule.h"
 #include "Engine.h"
-#include "Window.h"
+#include "Instances/Window.h"
 
 #include "lua.h"
 #include "lualib.h"
@@ -8,7 +8,7 @@
 #include <vector>
 #include <cstring>
 
-namespace Luwow::Luvk {
+namespace Luwow::LuVK {
     using ILuauModule = Luwow::Engine::ILuauModule;
     using Engine = Luwow::Engine::Engine;
     

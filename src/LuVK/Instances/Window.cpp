@@ -12,7 +12,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-namespace Luwow::Luvk {
+namespace Luwow::LuVK {
     Window::Window(const WindowDescriptor& descriptor) : descriptor(descriptor) {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -106,4 +106,4 @@ namespace Luwow::Luvk {
         lua_setfield(L, -2, "toggleVisibility");
         lua_setreadonly(L, -1, 1);
     }
-} // namespace Luwow::Luvk
+} // namespace Luwow::LuVK

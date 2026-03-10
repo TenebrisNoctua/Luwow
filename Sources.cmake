@@ -19,3 +19,13 @@ target_sources(Luwow.LRun PRIVATE
 target_sources(Luwow.LDebug PRIVATE
     src/ldebug/main.cpp
 )
+
+target_sources(Luwow.LuVK PRIVATE
+    src/LuVK/Descriptors.cpp
+    src/LuVK/Descriptors.h
+    src/LuVK/IGuiModule.h
+    src/LuVK/GuiModule.h
+    src/LuVK/GuiModule.cpp
+    src/LuVK/Instances/Window.cpp
+    src/LuVK/Instances/Window.h
+)

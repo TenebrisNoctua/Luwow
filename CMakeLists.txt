@@ -90,6 +90,8 @@ target_link_libraries(Luwow.LDebug PRIVATE
 
 target_link_libraries(Luwow.LuVK PRIVATE
     Luwow.Engine
+    Vulkan::Vulkan
+    glfw
 )
 
 # Set up target properties

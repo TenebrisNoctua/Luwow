@@ -7,7 +7,7 @@
 #define DEFAULTX 100
 #define DEFAULTY 100
 
-namespace Luwow::Luvk {
+namespace Luwow::LuVK {
     // Helper function to get the WindowDescriptor from the table.
     WindowDescriptor getWindowDescriptor(lua_State* L) {
         WindowDescriptor windowDescriptor;
