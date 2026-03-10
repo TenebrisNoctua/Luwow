@@ -12,7 +12,7 @@ namespace Luwow::LuVK {
         public:
             Window(const WindowDescriptor& descriptor);
             ~Window();
-            virtual void toggleVisibility(bool enabled) override;
+            virtual void initialize() override;
 
             // Accessors
             WindowDescriptor getDescriptor() const { return descriptor; };
@@ -21,11 +21,6 @@ namespace Luwow::LuVK {
 
             // GLFW Window Object
             GLFWwindow *window;
-
-            std::thread eventThread;
-            std::atomic<bool> eventThreadRunning{false};
-            std::atomic<bool> requestedVisible{false};
-            std::mutex startStopMutex;
     };
 
     void getWindowTable(lua_State* L, Window* window);

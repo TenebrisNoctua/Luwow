@@ -47,12 +47,6 @@ namespace Luwow::LuVK {
         WindowDescriptor windowDescriptor = getWindowDescriptor(L);
         Window* window = static_cast<Window*>(gui->createWindow(windowDescriptor));
         getWindowTable(L, window);
-    
-        // Store the window pointer in the table for later retrieval
-        lua_setreadonly(L, -1, 0);  // Make writable
-        lua_pushlightuserdata(L, window);
-        lua_setfield(L, -2, "__window_ptr");
-        lua_setreadonly(L, -1, 1);  // Make readonly again
         return 1;
     }
     
@@ -75,7 +69,7 @@ namespace Luwow::LuVK {
     }
     
     const char* GuiModule::getModuleName() const {
-        return "Gui";
+        return "LuVK";
     }
     
     static LuauExport exports[] = {

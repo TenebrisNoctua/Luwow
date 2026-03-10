@@ -7,7 +7,7 @@ namespace Luwow::LuVK {
     class IWindow {
         public:
             virtual ~IWindow() = default;
-            virtual void toggleVisibility(bool enabled) = 0;
+            virtual void initialize() = 0;
     };
 
     // Interface for the GUI API consistent across platforms
