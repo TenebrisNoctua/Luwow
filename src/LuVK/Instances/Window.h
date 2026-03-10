@@ -12,9 +12,13 @@ namespace Luwow::LuVK {
         public:
             Window(const WindowDescriptor& descriptor);
             ~Window();
+
+            Window(const Window &) = delete;
+            Window &operator=(const Window &) = delete;
+
             virtual void initialize() override;
 
-            // Accessors
+            // Accessor
             WindowDescriptor getDescriptor() const { return descriptor; };
         private:
             WindowDescriptor descriptor;
