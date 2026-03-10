@@ -2,10 +2,6 @@
 
 #include "IGuiModule.h"
 #include <GLFW/glfw3.h>
-#include <thread>
-#include <atomic>
-#include <mutex>
-#include <chrono>
 
 namespace Luwow::LuVK {
     class Window : public IWindow {

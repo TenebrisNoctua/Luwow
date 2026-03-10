@@ -1,18 +1,25 @@
 #include "GuiModule.h"
 #include "Engine.h"
+
 #include "Instances/Window.h"
+#include "Instances/MessageQueue.h"
+#include "Instances/Worker.h"
 
 #include "lua.h"
 #include "lualib.h"
+
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <thread>
+#include <string>
 
 namespace Luwow::LuVK {
     using ILuauModule = Luwow::Engine::ILuauModule;
     using Engine = Luwow::Engine::Engine;
+    using Package = Luwow::Engine::Package;
     
-    // For all methods that require the Gui instance, we need to get it from the userdata.
+    // Gets the module userdata from the lua state.
     static GuiModule* getModuleInstance(lua_State* L) {
         GuiModule* gui = static_cast<GuiModule*>(lua_touserdata(L, lua_upvalueindex(1)));
         if (!gui) {
@@ -20,28 +27,9 @@ namespace Luwow::LuVK {
         }
         return gui;
     }
-    
-    GuiModule::GuiModule() : engine(nullptr) {}
-    
-    ILuauModule* GuiModule::initialize(Engine* engine) {
-        GuiModule* gui = new GuiModule();
-        gui->setEngine(engine);
-        return gui;
-    }
-    
-    void GuiModule::messagePump() {
-        // Add message pump
-    }
-    
-    void GuiModule::setEngine(Engine* engine) {
-        this->engine = engine;
-        engine->setMessagePumpCallback(messagePump);
-    }
 
-    IWindow* GuiModule::createWindow(const WindowDescriptor& descriptor) {
-        return new Window(descriptor);
-    };
-    
+    // Luau Userdata Functions
+
     static int createWindow(lua_State* L) {
         GuiModule* gui = getModuleInstance(L);
         WindowDescriptor windowDescriptor = getWindowDescriptor(L);
@@ -67,6 +55,75 @@ namespace Luwow::LuVK {
     
         return 0;
     }
+
+    static int startThreads(lua_State* L) {
+        GuiModule* gui = getModuleInstance(L);
+        Package* package = gui->getPackage();
+
+        if (lua_gettop(L) > 5) {
+            luaL_error(L, "Only a maximum of 4 parameters allowed.");
+            return 0;
+        }
+
+        auto workers = gui->workers;
+        workers.reserve(4);
+
+        for (int i = -1; i >= -4; i--) {
+            const char* name = luaL_checkstring(L, i);
+            int index = package->indexOfFile(name);
+            if (index == -1) continue;
+
+            std::string bytecode = package->getFileContent(index);
+
+            auto worker = std::make_unique<Worker>();
+            worker->id = i;
+            worker->running = true;
+            worker->thread = std::thread(workerThread, worker.get(), name, bytecode);
+            workers.push_back(std::move(worker));
+        }
+
+        return 0;
+    }
+
+    static int endThreads(lua_State* L) {
+        GuiModule* gui = getModuleInstance(L);
+        gui->endThreads();
+        return 0;
+    }
+
+    // Class Functions
+    
+    GuiModule::GuiModule() : engine(nullptr) {}
+    
+    ILuauModule* GuiModule::initialize(Engine* engine, Package* package) {
+        GuiModule* gui = new GuiModule();
+        gui->setEngine(engine, package);
+        return gui;
+    }
+    
+    void GuiModule::messagePump() {
+        // Add message pump
+    }
+    
+    void GuiModule::setEngine(Engine* engine, Package* package) {
+        this->engine = engine;
+        this->package = package;
+        engine->setMessagePumpCallback(messagePump);
+    }
+
+    void GuiModule::endThreads() {
+        for (auto &worker : workers) {
+            MessageQueue* inbox = worker->getInbox();
+            inbox->stop();
+            worker->running = false;
+
+            if (!worker->thread.joinable()) worker->thread.join();
+        }
+    }
+
+    IWindow* GuiModule::createWindow(const WindowDescriptor& descriptor) {
+        return new Window(descriptor);
+    };
     
     const char* GuiModule::getModuleName() const {
         return "LuVK";
@@ -74,6 +131,8 @@ namespace Luwow::LuVK {
     
     static LuauExport exports[] = {
         { "new", createFunction },
+        { "startThreads", startThreads },
+        { "endThreads", endThreads },
         { nullptr, nullptr }
     };
     

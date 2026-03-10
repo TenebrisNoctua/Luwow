@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Package.h"
+
 // Forward declare Lua state
 struct lua_State;
 
@@ -25,7 +27,7 @@ public:
     virtual const LuauExport* getExports() const = 0;
 
     // Initialize the module
-    virtual ILuauModule* initialize(Engine* engine) = 0;
+    virtual ILuauModule* initialize(Engine* engine, Package* package) = 0;
 };
 
 } // namespace Luwow::Engine

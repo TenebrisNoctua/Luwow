@@ -28,4 +28,7 @@ target_sources(Luwow.LuVK PRIVATE
     src/LuVK/GuiModule.cpp
     src/LuVK/Instances/Window.cpp
     src/LuVK/Instances/Window.h
+    src/LuVK/Instances/MessageQueue.h
+    src/LuVK/Instances/Worker.h
+    src/LuVK/Instances/Worker.cpp
 )

@@ -2,10 +2,6 @@
 #include "lua.h"
 #include "lualib.h"
 
-#include <thread>
-#include <atomic>
-#include <mutex>
-#include <chrono>
 #include <iostream>
 #include <string>
 

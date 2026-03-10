@@ -126,7 +126,7 @@ int Engine::require(const std::string& moduleName) {
         // We initialize the module here on first require so that modules can have
         // access to the engine - some module implementations might need special
         // handling like preventing the runtime from exiting.
-        ILuauModule* initializedModule = module->second->initialize(this);
+        ILuauModule* initializedModule = module->second->initialize(this, &package);
         modules[moduleName] = std::shared_ptr<ILuauModule>(initializedModule);
 
         const LuauExport* exports = initializedModule->getExports();
