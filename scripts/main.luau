@@ -5,4 +5,6 @@ local Window = LuVK.new("Window", {
    Position = vector.create(800, 200)
 })
 
+LuVK.startThreads("testThread.luau")
 Window.initialize()
+LuVK.endThreads()

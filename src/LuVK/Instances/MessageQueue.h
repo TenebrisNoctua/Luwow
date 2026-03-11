@@ -16,6 +16,31 @@ namespace Luwow::LuVK {
 
     class MessageQueue {
         public:
+            void push(Message item) {
+                std::unique_lock<std::mutex> lock(m_mutex);
+                m_queue.push(item);
+                m_cond.notify_one();
+            }
+
+            Message pop() {
+                std::unique_lock<std::mutex> lock(m_mutex);
+                m_cond.wait(lock, [this]() { return !m_queue.empty(); });
+                
+                Message item = m_queue.front();
+                m_queue.pop();
+                
+                return item;
+            }
+
+        private:
+            std::queue<Message> m_queue;
+            std::mutex m_mutex;
+            std::condition_variable m_cond;
+    };
+
+    /*
+    class MessageQueue {
+        public:
             void push(Message msg) {
                 std::lock_guard<std::mutex> lk(mut); 
                 queue.push(std::move(msg));
@@ -44,4 +69,6 @@ namespace Luwow::LuVK {
             std::queue<Message> queue;
             bool stopped = false;
     };
+    */
+
 }

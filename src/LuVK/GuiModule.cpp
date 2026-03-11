@@ -13,6 +13,7 @@
 #include <cstring>
 #include <thread>
 #include <string>
+#include <cmath>
 
 namespace Luwow::LuVK {
     using ILuauModule = Luwow::Engine::ILuauModule;
@@ -58,18 +59,25 @@ namespace Luwow::LuVK {
 
     static int startThreads(lua_State* L) {
         GuiModule* gui = getModuleInstance(L);
-        Package* package = gui->getPackage();
+        Package* package = gui->getEngine()->getPackage();
 
-        if (lua_gettop(L) > 5) {
+        const int argCount = lua_gettop(L);
+        if (argCount > 4) {
             luaL_error(L, "Only a maximum of 4 parameters allowed.");
             return 0;
         }
 
-        auto workers = gui->workers;
+        auto& workers = gui->workers;
         workers.reserve(4);
 
+        MessageQueue queue;
+
         for (int i = -1; i >= -4; i--) {
-            const char* name = luaL_checkstring(L, i);
+            if (std::abs(i) > argCount) break;
+
+            const char* name = luaL_checkstring(L, -1);
+            lua_pop(L, 1);
+            
             int index = package->indexOfFile(name);
             if (index == -1) continue;
 
@@ -78,9 +86,11 @@ namespace Luwow::LuVK {
             auto worker = std::make_unique<Worker>();
             worker->id = i;
             worker->running = true;
-            worker->thread = std::thread(workerThread, worker.get(), name, bytecode);
+            worker->thread = std::thread(workerThread, worker.get(), name, bytecode, &queue);
             workers.push_back(std::move(worker));
         }
+
+        gui->queue = &queue;
 
         return 0;
     }
@@ -95,9 +105,9 @@ namespace Luwow::LuVK {
     
     GuiModule::GuiModule() : engine(nullptr) {}
     
-    ILuauModule* GuiModule::initialize(Engine* engine, Package* package) {
+    ILuauModule* GuiModule::initialize(Engine* engine) {
         GuiModule* gui = new GuiModule();
-        gui->setEngine(engine, package);
+        gui->setEngine(engine);
         return gui;
     }
     
@@ -105,18 +115,15 @@ namespace Luwow::LuVK {
         // Add message pump
     }
     
-    void GuiModule::setEngine(Engine* engine, Package* package) {
+    void GuiModule::setEngine(Engine* engine) {
         this->engine = engine;
-        this->package = package;
+        this->package = engine->getPackage();
         engine->setMessagePumpCallback(messagePump);
     }
 
     void GuiModule::endThreads() {
         for (auto &worker : workers) {
-            MessageQueue* inbox = worker->getInbox();
-            inbox->stop();
-            worker->running = false;
-
+            worker->running.store(false);
             if (!worker->thread.joinable()) worker->thread.join();
         }
     }

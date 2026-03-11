@@ -16,7 +16,7 @@ void Package::addFile(const std::string& filePath, const std::string& content) {
 
 int Package::indexOfFile(const std::string& filePath) {
     for (int i = 0; i < fileNames.size(); i++) {
-        if (fileNames[i] == filePath) {
+        if (fileNames[i] == filePath || (fileNames[i].find(filePath) != std::string::npos)) {
             return i;
         }
     }

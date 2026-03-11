@@ -1,5 +1,3 @@
-#pragma once
-
 #include "lua.h"
 #include "lualib.h"
 
@@ -35,9 +33,7 @@ namespace Luwow::LuVK {
             for (auto &p : it->second) {
                 Worker* worker = p.first;
                 if (!worker) continue;
-
-                MessageQueue* inbox = worker->getInbox();
-                inbox->push(Message {topic, body});
+                worker->queue->push(Message {topic, body});
             }
         }
     } broker;
@@ -52,7 +48,6 @@ namespace Luwow::LuVK {
         broker.publish(topic, msg);
         return 0;
     }
-
     
     static int lua_worker_bind(lua_State* L) {
         Worker* worker = static_cast<Worker*>(lua_touserdata(L, lua_upvalueindex(1)));
@@ -76,6 +71,7 @@ namespace Luwow::LuVK {
         lua_pushcclosure(L, &lua_worker_send, "SendMessage", 1);
         lua_setfield(L, -2, "SendMessage");
 
+        lua_pushlightuserdata(L, worker);
         lua_pushcclosure(L, &lua_worker_bind, "BindToMessage", 1);
         lua_setfield(L, -2, "BindToMessage");
 
@@ -100,42 +96,22 @@ namespace Luwow::LuVK {
         return 1;
     }
 
-    void workerThread(Worker* worker, const std::string name, const std::string bytecode) {
+    void workerThread(Worker* worker, const std::string name, const std::string bytecode, MessageQueue* queue) {
         lua_State* newState = luaL_newstate();
         worker->L = newState;
+        worker->queue = queue;
 
         luaL_openlibs(newState);
         registerWorkerUserdata(newState, worker);
         beginLuauThread(newState, name, bytecode);
 
         while (worker->running.load()) {
-            MessageQueue* inbox = worker->getInbox();
-            Message msg = inbox->pop();
+            try {
+                Message msg = queue->pop();
 
-            if (msg.topic.empty() && msg.body.empty()) break;
-            
-            // Look up subscriber refs for this topic from broker
-            std::vector<int> refs;
-            std::lock_guard<std::mutex> lk(broker.mut);
-            auto it = broker.subs.find(msg.topic);
-
-            if (it != broker.subs.end()) {
-                // Collect refs that belong to this worker
-                for (auto &p : it->second) {
-                    if (p.first == worker) refs.push_back(p.second);
-                }
-            }
-        
-            // For each ref, push function and call with message string
-            for (int r : refs) {
-                lua_rawgeti(worker->L, LUA_REGISTRYINDEX, r);
-                lua_pushstring(worker->L, msg.body.c_str());
-
-                if (lua_pcall(worker->L, 1, 0, 0) != 0) {
-                    std::string err = lua_tostring(worker->L, -1);
-                    std::cerr << "Worker " << worker->id << " callback error: " << err << "\n";
-                    lua_pop(worker->L, 1);
-                }
+                // TODO: Implement main sending and binding system.
+            } catch (const std::system_error &e) {
+                std::cerr << e.what() << " code=" << e.code().value() << '\n';
             }
         }
 

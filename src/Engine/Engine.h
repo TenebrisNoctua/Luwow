@@ -35,8 +35,8 @@ public:
     int loadModuleFromBytecode(lua_State* L, const std::string& moduleName, const std::string& bytecode);
     void run();
 
-    lua_State* getMainState() { return L; }
-
+    lua_State* getMainState() { return L; };
+    Package* getPackage() { return &package; }
 private:
     lua_State* L;
     bool usesCompiler;

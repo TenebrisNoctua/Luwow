@@ -59,7 +59,9 @@ target_include_directories(Luwow.LuVK PRIVATE
 # Set up target link dependencies
 
 target_link_libraries(Luwow.Engine PUBLIC
-    Luau.VM Luau.Common
+    Luau.VM 
+    Luau.Common
+    nlohmann_json::nlohmann_json
 )
 
 target_link_libraries(Luwow.LRun PRIVATE
@@ -114,6 +116,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/extern/cppdap)
 
 # Add GLFW
 add_subdirectory(${CMAKE_SOURCE_DIR}/extern/glfw)
+
+# Add nlohmann's json
+add_subdirectory(${CMAKE_SOURCE_DIR}/extern/json)
 
 # Set up paths for sssooonnnggg/luau-debugger dependencies
 # Luau path

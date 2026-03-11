@@ -15,14 +15,12 @@ namespace Luwow::LuVK {
             int id;
             std::thread thread;
             std::atomic<bool> running {true};
-            lua_State* L = nullptr;
 
-            MessageQueue* getInbox() { return inbox; };
-        private:
-            MessageQueue* inbox;
+            lua_State* L = nullptr;
+            MessageQueue* queue;
     };
 
     // The thread the worker will run on.
-    void workerThread(Worker* worker, const std::string& name, const std::string& bytecode);
+    void workerThread(Worker* worker, const std::string name, const std::string bytecode, MessageQueue* queue);
 }
 

@@ -1,0 +1,7 @@
+{
+    "name": "NewProject",
+    "tree": {
+        "main": "scripts/main.luau",
+        "@testThread": "scripts/testThread.luau"
+    }
+}

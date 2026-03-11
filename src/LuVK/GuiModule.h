@@ -4,6 +4,7 @@
 #include "Engine.h"
 
 #include "Instances/Worker.h"
+#include "Instances/MessageQueue.h"
 
 namespace Luwow::LuVK {
     using Package = Luwow::Engine::Package;
@@ -14,24 +15,25 @@ namespace Luwow::LuVK {
             GuiModule();
             ~GuiModule() = default;
 
+            GuiModule(const GuiModule& guiModule) = delete;
+
             const char* getModuleName() const override;
             const LuauExport* getExports() const override;
 
-            ILuauModule* initialize(Engine* engine, Package* package) override;
+            ILuauModule* initialize(Engine* engine) override;
             IWindow* createWindow(const WindowDescriptor& descriptor) override;
+            Engine* getEngine() { return engine; };
 
             void endThreads();
 
-            Package* getPackage() { return package; };
-            Engine* getEngine() { return engine; };
+            Package* package;
+            MessageQueue* queue;
 
             std::vector<std::unique_ptr<Worker>> workers;
 
             static void messagePump();
         private:
-            void setEngine(Engine* engine, Package* package);
-
+            void setEngine(Engine* engine);
             Engine* engine;
-            Package* package;
     };
 }
