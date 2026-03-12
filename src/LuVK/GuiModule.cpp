@@ -111,9 +111,7 @@ namespace Luwow::LuVK {
         return gui;
     }
     
-    void GuiModule::messagePump() {
-        // Add message pump
-    }
+    void GuiModule::messagePump() {}
     
     void GuiModule::setEngine(Engine* engine) {
         this->engine = engine;

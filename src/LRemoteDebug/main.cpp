@@ -4,6 +4,7 @@
 #include <debugger.h>
 #include "luacode.h"
 #include "Engine.h"
+#include "GuiModule.h"
 
 using Engine = Luwow::Engine::Engine;
 using Package = Luwow::Engine::Package;
@@ -88,6 +89,8 @@ int main(int argc, char* argv[]) {
         // }
 
         // Initialize the engine
+        Engine::registerInternalModule(std::make_shared<Luwow::LuVK::GuiModule>());
+
         Engine engine((Package()), filePath);
         engine.setCompilerCallback(compilerCallback);
         engine.setDebuggerNewLuauCallback(debuggerCallback);

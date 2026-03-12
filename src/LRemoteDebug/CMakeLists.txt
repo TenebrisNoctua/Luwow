@@ -12,6 +12,7 @@ target_sources(Luwow.LRemoteDebug
 )
 target_link_libraries(Luwow.LRemoteDebug PRIVATE
     Luwow.Engine
+    Luwow.LuVK
     Luau.VM
     Luau.Compiler
     Luau.CLI.lib
@@ -28,6 +29,7 @@ target_include_directories(Luwow.LRemoteDebug PRIVATE
     ${LUAU_ROOT}/CLI
     ${LUAU_ROOT}/Config/include
     ${CMAKE_SOURCE_DIR}/src/Engine
+    ${CMAKE_SOURCE_DIR}/src/LuVK
     ${CMAKE_SOURCE_DIR}/extern/luau-debugger/debugger/include
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
